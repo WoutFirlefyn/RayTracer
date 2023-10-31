@@ -28,7 +28,6 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	float aspectRatio{ float(m_Width) / m_Height };
-	Ray viewRay{ camera.origin };
 
 	float fov{ tan(camera.fovAngle * TO_RADIANS / 2.f)  };
 
