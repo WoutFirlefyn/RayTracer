@@ -13,18 +13,12 @@ namespace dae
 		 */
 		static ColorRGB Lambert(float kd, const ColorRGB& cd)
 		{
-			//todo: W3
-			ColorRGB rho{ cd * kd };
-			ColorRGB lambert{ rho / PI };
-			return lambert;
+			return cd * kd / PI;
 		}
 
 		static ColorRGB Lambert(const ColorRGB& kd, const ColorRGB& cd)
 		{
-			//todo: W3
-			ColorRGB rho{ cd * kd };
-			ColorRGB lambert{ rho / PI };
-			return lambert;
+			return cd * kd / PI;
 		}
 
 		/**
@@ -38,12 +32,8 @@ namespace dae
 		 */
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
-			ColorRGB phong{};
-
-			Vector3 reflect{ Vector3::Reflect(l,n) };
-			float cosA{ std::max(0.f, Vector3::Dot(reflect, -v)) };
-			phong = colors::White * ks * powf(cosA, exp);
-
+			const float cosA{ std::max(0.f, Vector3::Dot(Vector3::Reflect(l,n), -v)) };
+			const ColorRGB& phong{ colors::White * ks * powf(cosA, exp) };
 			return phong;
 		}
 
@@ -56,10 +46,7 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			//todo: W3
-			ColorRGB fresnel{};
-			fresnel = f0 + (colors::White - f0) * powf(1.f - Vector3::Dot(h, v), 5);
-			return fresnel;
+			return f0 + (colors::White - f0) * powf(1.f - Vector3::Dot(h, v), 5);
 		}
 
 		/*
@@ -71,10 +58,8 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			//todo: W3
-			float normalDistr{};
-			float alphaSqr{ powf(roughness, 4) };
-			normalDistr = alphaSqr / (PI * Square(Square(Vector3::Dot(n, h)) * (alphaSqr - 1) + 1));
+			const float alphaSqr{ powf(roughness, 4) };
+			const float normalDistr{ alphaSqr / (PI * Square(Square(Vector3::Dot(n, h)) * (alphaSqr - 1) + 1)) };
 			return normalDistr;
 		}
 
@@ -88,11 +73,9 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			//todo: W3
-			float geometry{};
-			float dot{ std::max(0.f, Vector3::Dot(n,v)) };
-			float k{ Square(Square(roughness) + 1) / 8.f };
-			geometry = dot / (dot * (1 - k) + k);
+			const float dot{ std::max(0.f, Vector3::Dot(n,v)) };
+			const float k{ Square(Square(roughness) + 1) / 8.f };
+			const float geometry{ dot / (dot * (1 - k) + k) };
 			return geometry;
 		}
 

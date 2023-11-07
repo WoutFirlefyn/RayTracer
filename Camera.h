@@ -37,14 +37,12 @@ namespace dae
 
 		Matrix cameraToWorld{};
 
-
 		Matrix CalculateCameraToWorld()
 		{
 			right = Vector3::Cross(Vector3::UnitY,forward).Normalized();
 			up = Vector3::Cross(forward, right).Normalized();
 
-			Matrix newMatrix{ right, up, forward, origin };
-			return newMatrix;
+			return Matrix{ right, up, forward, origin };
 		}
 
 		void Update(Timer* pTimer)
@@ -58,7 +56,6 @@ namespace dae
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			//todo: W2
 			float moveSpeed{ movementSpeed * deltaTime };
 			const float rotSpeed{ rotationSpeed * deltaTime };
 			const float speedMultiplier{ 4.f };
@@ -67,19 +64,19 @@ namespace dae
 			{
 				moveSpeed *= speedMultiplier;
 			}
-			if (pKeyboardState[SDL_SCANCODE_W])
+			if (pKeyboardState[SDL_SCANCODE_W] || pKeyboardState[SDL_SCANCODE_UP])
 			{
 				origin += forward * moveSpeed;
 			}
-			if (pKeyboardState[SDL_SCANCODE_S])
+			if (pKeyboardState[SDL_SCANCODE_S] || pKeyboardState[SDL_SCANCODE_DOWN])
 			{
 				origin -= forward * moveSpeed;
 			}
-			if (pKeyboardState[SDL_SCANCODE_D])
+			if (pKeyboardState[SDL_SCANCODE_D] || pKeyboardState[SDL_SCANCODE_RIGHT])
 			{
 				origin += right * moveSpeed;
 			}
-			if (pKeyboardState[SDL_SCANCODE_A])
+			if (pKeyboardState[SDL_SCANCODE_A] || pKeyboardState[SDL_SCANCODE_LEFT])
 			{
 				origin -= right * moveSpeed;
 			}
@@ -105,15 +102,17 @@ namespace dae
 				yaw = mouseX * rotSpeed;
 				pitch = -mouseY * rotSpeed;
 			}
+			if (mouseState == (SDL_BUTTON(1) | SDL_BUTTON(3)))
+			{
+				origin += (float)std::max(-5, std::min(5, -mouseY))* Vector3::UnitY * moveSpeed;
+			}
 			
 			totalPitch += pitch;
-			if (totalPitch >= PI_DIV_2) totalPitch = PI_DIV_2 - 0.01f;
-			if (totalPitch <= -PI_DIV_2) totalPitch = -PI_DIV_2 + 0.01f;
+			totalPitch = std::max(std::min(totalPitch, PI_DIV_2 - 0.01f), -PI_DIV_2 + 0.01f);
 			totalYaw += yaw;
 
-			Matrix rotationMatrix{ Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw) };
-			forward = rotationMatrix.TransformVector(Vector3::UnitZ);
-			forward.Normalize();
+			const Matrix& rotationMatrix{ Matrix::CreateRotationX(totalPitch) * Matrix::CreateRotationY(totalYaw) };
+			forward = rotationMatrix.TransformVector(Vector3::UnitZ).Normalized();
 		}
 	};
 }

@@ -49,6 +49,7 @@ int main(int argc, char* args[])
 	//const auto pScene = new Scene_W2();
 	//const auto pScene = new Scene_W3();
 	const auto pScene = new Scene_W4();
+	//const auto pScene = new Scene_W4_BunnyScene();
 	pScene->Initialize();
 
 	//Start loop
@@ -72,12 +73,14 @@ int main(int argc, char* args[])
 				isLooping = false;
 				break;
 			case SDL_KEYUP:
-				if(e.key.keysym.scancode == SDL_SCANCODE_X)
+				if (e.key.keysym.scancode == SDL_SCANCODE_X)
 					takeScreenshot = true;
 				if (e.key.keysym.scancode == SDL_SCANCODE_F2)
 					pRenderer->ToggleShadows();
 				if (e.key.keysym.scancode == SDL_SCANCODE_F3)
 					pRenderer->CycleLightingMode();
+				if (e.key.keysym.scancode == SDL_SCANCODE_F6)
+					pTimer->StartBenchmark();
 				break;
 			}
 		}
